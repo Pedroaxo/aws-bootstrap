@@ -1,13 +1,16 @@
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
+  EC2InstanceType:
+    Type: String
   EC2AMI:
     Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
     Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
 
 Resources:
+
   SecurityGroup:
-    Type: AWS::EC2::SecurityGroup
+    Type: "AWS::EC2::SecurityGroup"
     Properties:
       GroupDescription: !Sub 'Internal Security group for ${AWS::StackName}'
       SecurityGroupIngress:
@@ -21,7 +24,7 @@ Resources:
           CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
-          Value: !Ref AWS::StackName       
+          Value: !Ref AWS::StackName
   InstanceRole:
     Type: "AWS::IAM::Role"
     Properties:
@@ -58,7 +61,7 @@ Resources:
               unzip: []
     Properties:
       ImageId: !Ref EC2AMI
-      InstanceType: t2.micro 
+      InstanceType: !Ref EC2InstanceType
       IamInstanceProfile: !Ref InstanceProfile
       Monitoring: true
       SecurityGroupIds:
@@ -94,7 +97,7 @@ Resources:
             nvm use v12.7.0
 
             # Download latest code, unzip it into /home/ec2-user/app
-            wget https://github.com/Pedroaxo/aws-bootstrap/archive/master.zip 
+            wget https://github.com/pedroaxo/aws-bootstrap/archive/master.zip 
             unzip master.zip
             mv aws-bootstrap-master app
 
@@ -112,8 +115,14 @@ Resources:
 
           # Signal to CloudFormation that the instance is ready
           /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --region ${AWS::Region} --resource Instance 
+          
       Tags:
         - Key: Name
           Value: !Ref AWS::StackName
 
-
+Outputs:
+  InstanceEndpoint:
+    Description: The DNS name for the created instance
+    Value: !Sub "http://${Instance.PublicDnsName}:8080" 
+    Export:
+      Name: InstanceEndpoint

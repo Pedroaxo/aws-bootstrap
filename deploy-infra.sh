@@ -1,10 +1,22 @@
 #!/bin/bash
 
-STACK_NAME=awsbootstrap 
+STACK_NAME=awsbootstrap
 REGION=us-east-2 
 CLI_PROFILE=851725189472_AdministratorAccess
 
 EC2_INSTANCE_TYPE=t2.micro 
+
+# Deploys static resources
+echo -e "\n\n=========== Deploying setup.yml ==========="
+aws cloudformation deploy \
+  --region $REGION \
+  --profile $CLI_PROFILE \
+  --stack-name $STACK_NAME-setup \
+  --template-file setup.yml \
+  --no-fail-on-empty-changeset \
+  --capabilities CAPABILITY_NAMED_IAM \
+  --parameter-overrides \
+    CodePipelineBucket=$CODEPIPELINE_BUCKET
 
 # Deploy the CloudFormation template
 echo -e "\n\n=========== Deploying main.yml ==========="
@@ -15,4 +27,11 @@ aws cloudformation deploy \
   --template-file main.yml \
   --no-fail-on-empty-changeset \
   --capabilities CAPABILITY_NAMED_IAM \
-  --parameter-overrides \ EC2InstanceType=$EC2_INSTANCE_TYPE
+  --parameter-overrides EC2InstanceType=$EC2_INSTANCE_TYPE
+
+    # If the deploy succeeded, show the DNS name of the created instance
+if [ $? -eq 0 ]; then
+  aws cloudformation list-exports \
+    --profile 851725189472_AdministratorAccess \
+    --query "Exports[?Name=='InstanceEndpoint'].Value" 
+fi
