@@ -1,8 +1,8 @@
 source aws_credentials.sh
 
 STACK_NAME=awsbootstrap
-REGION=us-east-1 
-CLI_PROFILE=awsbootstrap
+REGION=us-east-2 
+CLI_PROFILE=851725189472_AdministratorAccess
 
 EC2_INSTANCE_TYPE=t2.micro 
 
@@ -20,6 +20,6 @@ aws cloudformation deploy \
     # If the deploy succeeded, show the DNS name of the created instance
 if [ $? -eq 0 ]; then
   aws cloudformation list-exports \
-    --profile awsbootstrap \
+    --profile 851725189472_AdministratorAccess \
     --query "Exports[?Name=='InstanceEndpoint'].Value" 
 fi
