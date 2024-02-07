@@ -2,8 +2,8 @@
 source aws_credentials.sh
 
 STACK_NAME=awsbootstrap
-REGION=us-east-1 
-CLI_PROFILE=awsbootstrap
+REGION=us-east-2 
+CLI_PROFILE=851725189472_AdministratorAccess
 EC2_INSTANCE_TYPE=t2.micro 
 
 GH_ACCESS_TOKEN=$(cat ~/.github/aws-bootstrap-access-token)
@@ -11,7 +11,7 @@ GH_OWNER=$(cat ~/.github/aws-bootstrap-owner)
 GH_REPO=$(cat ~/.github/aws-bootstrap-repo)
 GH_BRANCH=master
 
-AWS_ACCOUNT_ID=`aws sts get-caller-identity --profile awsbootstrap --query "Account" --output text`
+AWS_ACCOUNT_ID=`aws sts get-caller-identity --profile 851725189472_AdministratorAccess --query "Account" --output text`
 CODEPIPELINE_BUCKET="$STACK_NAME-$REGION-codepipeline-$AWS_ACCOUNT_ID" 
 
 echo $CODEPIPELINE_BUCKET
